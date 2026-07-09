@@ -6,22 +6,54 @@
 [![Codex Skill](https://img.shields.io/badge/Codex-Skill-0f766e.svg)](./agents/openai.yaml)
 [![Focus: Maintainability](https://img.shields.io/badge/Focus-Maintainability-b45309.svg)](./SKILL.md)
 
-A reusable Codex skill for writing code that is clear, maintainable, and easy to debug.
+Write code that still feels good to read three months later.
 
-This repository packages `maintainable-code-craft` as a portable skill that can be installed globally or per project. It helps Codex favor readable structure, explicit naming, safe configuration, focused changes, and maintainable engineering choices across day-to-day coding work.
+`maintainable-code-craft` is a reusable Codex skill for teams who want AI-assisted code to feel calm, readable, and reviewable instead of clever, noisy, or over-engineered.
 
-## Why This Skill Exists
+It pushes Codex toward:
 
-Many AI-assisted coding workflows can drift toward code that is flashy, overly abstract, or difficult to maintain. This skill pushes in the opposite direction.
+- Better names
+- Smaller changes
+- Clearer structure
+- Safer configuration
+- More explicit errors
+- Code a human teammate can confidently maintain
 
-It helps Codex write code that is:
+## Why People Use It
 
-- Clear and human-readable
-- Consistent with the local codebase
-- Small in scope and safer to review
-- Explicit about side effects and errors
-- Careful with configuration and secrets
-- Easier to maintain months later
+AI can make code fast. That does not always mean it makes code pleasant to own.
+
+This skill exists for the moment when you want Codex to stop optimizing for novelty and start optimizing for engineering taste:
+
+- Prefer the simplest design that safely solves the real task
+- Preserve local codebase conventions instead of rewriting everything
+- Make side effects obvious
+- Keep formulas, scoring, and data logic auditable
+- Avoid vague names, hidden magic, and dependency sprawl
+
+If you want "boring in the best possible way," this skill is for you.
+
+## What It Changes In Practice
+
+Instead of output like this:
+
+```text
+Refactor this into a flexible manager with helper abstractions and utility layers.
+```
+
+You steer Codex toward output like this:
+
+```text
+Keep the change small. Use clear names. Make file writes explicit. Do not introduce new abstractions unless they remove real complexity.
+```
+
+The result is usually:
+
+- Code that is easier to review
+- Diffs that are easier to trust
+- Fewer accidental rewrites
+- Less hidden behavior
+- Better handoff to the next developer
 
 ## Best Fit
 
@@ -36,33 +68,14 @@ Use this skill for:
 - UI and dashboard code
 - Refactoring and review work
 
-## What It Encourages
+## Core Principles
 
-- Clear domain naming instead of vague placeholders
-- Small, focused functions and changes
-- Local consistency over unnecessary rewrites
-- Explicit errors over silent failure
-- Safe configuration instead of hard-coded secrets
-- Auditable formulas and data logic
-- Justified dependencies instead of trend-driven additions
-
-## Install
-
-### Global install
-
-Place this directory at:
-
-```text
-~/.codex/skills/maintainable-code-craft/
-```
-
-### Project-local install
-
-Place this directory at:
-
-```text
-<your-project>/.agents/skills/maintainable-code-craft/
-```
+- Name things by intent, not by placeholder
+- Keep functions focused on one responsibility
+- Make errors visible and actionable
+- Keep raw data, normalized data, and derived results separate
+- Prefer local consistency over generic "best practice" churn
+- Add dependencies only when they clearly reduce risk or complexity
 
 ## Quick Start
 
@@ -84,6 +97,24 @@ Use maintainable-code-craft while implementing this feature and keep the change 
 Use maintainable-code-craft to clean up this script and make error handling explicit.
 ```
 
+## Install
+
+### Global install
+
+Place this directory at:
+
+```text
+~/.codex/skills/maintainable-code-craft/
+```
+
+### Project-local install
+
+Place this directory at:
+
+```text
+<your-project>/.agents/skills/maintainable-code-craft/
+```
+
 ## Repository Layout
 
 ```text
@@ -99,9 +130,9 @@ maintainable-code-craft/
 
 ## Included Files
 
-- `SKILL.md` contains the maintainability rules and workflow guidance.
+- `SKILL.md` contains the full maintainability workflow and writing rules.
 - `agents/openai.yaml` contains Codex-facing metadata for the skill interface.
-- `assets/banner.svg` provides the repository banner used in the README.
+- `assets/banner.svg` provides the repository banner used in this README.
 
 ## Notes
 
