@@ -1,5 +1,7 @@
 # Maintainable Code Craft
 
+[English](./README.md) | [简体中文](./README.zh-CN.md)
+
 ![Maintainable Code Craft](./assets/banner.svg)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-1f2937.svg)](./LICENSE)
@@ -18,6 +20,27 @@ It pushes Codex toward:
 - Safer configuration
 - More explicit errors
 - Code a human teammate can confidently maintain
+
+## Default Baseline Skill
+
+For code-writing and code-changing work, this skill is meant to act as a default baseline skill.
+
+That means:
+
+- It is the stable foundation for maintainability, naming, structure, scope control, and engineering taste
+- It is usually used together with specialist skills instead of replacing them
+- It is non-exclusive by design
+- It should remain active when Codex is writing, editing, refactoring, debugging, or reviewing code
+
+In practice, `maintainable-code-craft` often works alongside skills such as:
+
+- `tdd-workflow` for test-driven feature work and bug fixes
+- `error-handling` for retries, fallback logic, and failure design
+- `verification-loop` for final validation before shipping
+- Database-specific skills for schema, query, and migration work
+- UI or design skills for frontend-heavy tasks
+
+Think of it as the maintainability layer, not the task-specific specialist.
 
 ## Why People Use It
 
@@ -125,6 +148,7 @@ maintainable-code-craft/
   agents/
     openai.yaml
   README.md
+  README.zh-CN.md
   LICENSE
 ```
 
