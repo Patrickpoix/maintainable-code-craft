@@ -1,21 +1,31 @@
 # Maintainable Code Craft
 
+![Maintainable Code Craft](./assets/banner.svg)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-1f2937.svg)](./LICENSE)
+[![Codex Skill](https://img.shields.io/badge/Codex-Skill-0f766e.svg)](./agents/openai.yaml)
+[![Focus: Maintainability](https://img.shields.io/badge/Focus-Maintainability-b45309.svg)](./SKILL.md)
+
 A reusable Codex skill for writing code that is clear, maintainable, and easy to debug.
 
-This skill is designed as a default engineering baseline for code writing, editing, reviewing, refactoring, and debugging work. It emphasizes small safe changes, explicit naming, clear error handling, auditable logic, and avoiding unnecessary complexity.
+This repository packages `maintainable-code-craft` as a portable skill that can be installed globally or per project. It helps Codex favor readable structure, explicit naming, safe configuration, focused changes, and maintainable engineering choices across day-to-day coding work.
 
-## What This Skill Does
+## Why This Skill Exists
 
-`maintainable-code-craft` helps Codex produce code that is:
+Many AI-assisted coding workflows can drift toward code that is flashy, overly abstract, or difficult to maintain. This skill pushes in the opposite direction.
 
-- Human-readable
+It helps Codex write code that is:
+
+- Clear and human-readable
 - Consistent with the local codebase
-- Conservative in scope
+- Small in scope and safer to review
 - Explicit about side effects and errors
 - Careful with configuration and secrets
-- Easier to maintain over time
+- Easier to maintain months later
 
-It is a good fit for:
+## Best Fit
+
+Use this skill for:
 
 - Application code
 - Scripts and automation
@@ -26,40 +36,37 @@ It is a good fit for:
 - UI and dashboard code
 - Refactoring and review work
 
-## Repository Layout
+## What It Encourages
 
-```text
-maintainable-code-craft/
-  SKILL.md
-  agents/
-    openai.yaml
-  README.md
-  LICENSE
-```
+- Clear domain naming instead of vague placeholders
+- Small, focused functions and changes
+- Local consistency over unnecessary rewrites
+- Explicit errors over silent failure
+- Safe configuration instead of hard-coded secrets
+- Auditable formulas and data logic
+- Justified dependencies instead of trend-driven additions
 
 ## Install
 
-### Option 1: Global install
+### Global install
 
-Copy this folder to:
+Place this directory at:
 
 ```text
 ~/.codex/skills/maintainable-code-craft/
 ```
 
-### Option 2: Project-local install
+### Project-local install
 
-Copy this folder to:
+Place this directory at:
 
 ```text
 <your-project>/.agents/skills/maintainable-code-craft/
 ```
 
-## Usage
+## Quick Start
 
-Use this skill when you want Codex to favor maintainable engineering decisions during coding work.
-
-Typical prompts:
+Example prompts:
 
 ```text
 Use maintainable-code-craft to refactor this module without changing behavior.
@@ -73,15 +80,33 @@ Use maintainable-code-craft to review this patch for naming, structure, and main
 Use maintainable-code-craft while implementing this feature and keep the change small and readable.
 ```
 
+```text
+Use maintainable-code-craft to clean up this script and make error handling explicit.
+```
+
+## Repository Layout
+
+```text
+maintainable-code-craft/
+  assets/
+    banner.svg
+  SKILL.md
+  agents/
+    openai.yaml
+  README.md
+  LICENSE
+```
+
 ## Included Files
 
-- `SKILL.md`: the main maintainability rules and workflow
-- `agents/openai.yaml`: Codex interface metadata
+- `SKILL.md` contains the maintainability rules and workflow guidance.
+- `agents/openai.yaml` contains Codex-facing metadata for the skill interface.
+- `assets/banner.svg` provides the repository banner used in the README.
 
 ## Notes
 
-This repository contains only the skill files needed for reuse. It does not include your private Codex configuration, other installed skills, or personal environment data.
+This repository contains only the files needed to reuse the skill. It does not include private Codex configuration, unrelated local skills, credentials, or personal environment data.
 
 ## License
 
-MIT
+MIT. See [LICENSE](./LICENSE).
