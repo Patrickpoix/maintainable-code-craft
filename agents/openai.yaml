@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintainable Code Craft"
+  short_description: "Default maintainable coding standards"
+  default_prompt: "Use maintainable-code-craft when writing, editing, reviewing, or refactoring code."
