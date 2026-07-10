@@ -1,167 +1,194 @@
-# Maintainable Code Craft
-
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
 ![Maintainable Code Craft](./assets/banner.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-1f2937.svg)](./LICENSE)
-[![Codex Skill](https://img.shields.io/badge/Codex-Skill-0f766e.svg)](./agents/openai.yaml)
-[![Focus: Maintainability](https://img.shields.io/badge/Focus-Maintainability-b45309.svg)](./SKILL.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1f2937.svg)](./LICENSE)
+[![Codex Skill](https://img.shields.io/badge/Codex-skill-0f766e.svg)](./SKILL.md)
 
-Write code that still feels good to read three months later.
+Write code that still feels clear when someone has to change it three months later.
 
-`maintainable-code-craft` is a reusable Codex skill for teams who want AI-assisted code to feel calm, readable, and reviewable instead of clever, noisy, or over-engineered.
+`maintainable-code-craft` is a reusable Codex skill for calmer, smaller, and more reviewable code changes. It gives Codex a consistent maintainability baseline without taking over the specialist workflow needed for the task.
 
-It pushes Codex toward:
+> The baseline stays constant. The specialist changes with the job.
 
-- Better names
-- Smaller changes
-- Clearer structure
-- Safer configuration
-- More explicit errors
-- Code a human teammate can confidently maintain
+## A Baseline, Not The Whole Toolbox
 
-## Default Baseline Skill
+For code-writing and code-changing work, this skill is designed to be the default foundation for:
 
-For code-writing and code-changing work, this skill is meant to act as a default baseline skill.
+- Naming and readability
+- Change scope and local consistency
+- Structure and visible side effects
+- Explicit errors and safe configuration
+- Dependency restraint and practical verification
 
-That means:
-
-- It is the stable foundation for maintainability, naming, structure, scope control, and engineering taste
-- It is usually used together with specialist skills instead of replacing them
-- It is non-exclusive by design
-- It should remain active when Codex is writing, editing, refactoring, debugging, or reviewing code
-
-In practice, `maintainable-code-craft` often works alongside skills such as:
-
-- `tdd-workflow` for test-driven feature work and bug fixes
-- `error-handling` for retries, fallback logic, and failure design
-- `verification-loop` for final validation before shipping
-- Database-specific skills for schema, query, and migration work
-- UI or design skills for frontend-heavy tasks
-
-Think of it as the maintainability layer, not the task-specific specialist.
-
-## Why People Use It
-
-AI can make code fast. That does not always mean it makes code pleasant to own.
-
-This skill exists for the moment when you want Codex to stop optimizing for novelty and start optimizing for engineering taste:
-
-- Prefer the simplest design that safely solves the real task
-- Preserve local codebase conventions instead of rewriting everything
-- Make side effects obvious
-- Keep formulas, scoring, and data logic auditable
-- Avoid vague names, hidden magic, and dependency sprawl
-
-If you want "boring in the best possible way," this skill is for you.
-
-## What It Changes In Practice
-
-Instead of output like this:
+It is deliberately non-exclusive. Use it with specialist skills rather than instead of them.
 
 ```text
-Refactor this into a flexible manager with helper abstractions and utility layers.
+             tdd-workflow      error-handling      interface-design
+                    \                |                /
+                     \        task-specific layer    /
+                      +------------------------------+
+                      |  maintainable-code-craft     |
+                      |  stable maintainability base |
+                      +------------------------------+
 ```
 
-You steer Codex toward output like this:
+## How It Composes
+
+| Task | Suggested skill combination |
+|---|---|
+| Build or fix a feature | `maintainable-code-craft` + `tdd-workflow` |
+| Design failure paths | `maintainable-code-craft` + `error-handling` |
+| Finish a meaningful change | `maintainable-code-craft` + `verification-loop` |
+| Change schemas or queries | `maintainable-code-craft` + a database-specific skill |
+| Build a polished interface | `maintainable-code-craft` + a UI/design skill |
+
+The specialist skill owns the deeper workflow. `maintainable-code-craft` keeps the result readable, scoped, and maintainable.
+
+## What Changes In Practice
+
+Without a maintainability baseline, an AI coding task can drift toward broad rewrites, vague names, unnecessary abstractions, or hidden side effects.
+
+With this skill, Codex is instructed to:
+
+- Inspect the existing project before editing
+- Make the smallest safe change that solves the request
+- Preserve local conventions unless they are harmful
+- Make errors, configuration, and side effects visible
+- Add abstractions and dependencies only when they remove real complexity
+- Verify changed behavior at a level proportional to risk
+
+### Example
+
+Instead of a broad instruction:
 
 ```text
-Keep the change small. Use clear names. Make file writes explicit. Do not introduce new abstractions unless they remove real complexity.
+Refactor this module into a flexible architecture with reusable managers and utilities.
 ```
 
-The result is usually:
+Use a scoped instruction:
 
-- Code that is easier to review
-- Diffs that are easier to trust
-- Fewer accidental rewrites
-- Less hidden behavior
-- Better handoff to the next developer
-
-## Best Fit
-
-Use this skill for:
-
-- Application code
-- Scripts and automation
-- Tests
-- Crawlers and API clients
-- Data pipelines
-- Financial and scoring logic
-- UI and dashboard code
-- Refactoring and review work
+```text
+Use $maintainable-code-craft to refactor this module without changing behavior.
+Keep the diff small, preserve local conventions, and make file writes explicit.
+```
 
 ## Core Principles
 
 - Name things by intent, not by placeholder
-- Keep functions focused on one responsibility
-- Make errors visible and actionable
-- Keep raw data, normalized data, and derived results separate
-- Prefer local consistency over generic "best practice" churn
-- Add dependencies only when they clearly reduce risk or complexity
+- Keep functions focused and side effects obvious
+- Prefer local consistency over generic best-practice churn
+- Never hide failures behind fake success or empty catches
+- Keep secrets and environment-specific values out of source code
+- Test important behavior and edge cases when feasible
+- Stop adding structure when the problem is already solved clearly
 
-## Quick Start
-
-Example prompts:
-
-```text
-Use maintainable-code-craft to refactor this module without changing behavior.
-```
-
-```text
-Use maintainable-code-craft to review this patch for naming, structure, and maintainability issues.
-```
-
-```text
-Use maintainable-code-craft while implementing this feature and keep the change small and readable.
-```
-
-```text
-Use maintainable-code-craft to clean up this script and make error handling explicit.
-```
+Data-heavy and financial tasks receive additional guidance through an on-demand reference instead of loading those rules for every coding task.
 
 ## Install
 
-### Global install
+### Global installation
 
-Place this directory at:
+Install globally when you want the skill available across projects.
 
-```text
-~/.codex/skills/maintainable-code-craft/
+macOS or Linux:
+
+```bash
+skills_root="${CODEX_HOME:-$HOME/.codex}/skills"
+mkdir -p "$skills_root"
+git clone https://github.com/Patrickpoix/maintainable-code-craft.git \
+  "$skills_root/maintainable-code-craft"
 ```
 
-### Project-local install
+Windows PowerShell:
 
-Place this directory at:
+```powershell
+$skillsRoot = if ($env:CODEX_HOME) {
+    Join-Path $env:CODEX_HOME "skills"
+} else {
+    Join-Path $HOME ".codex\skills"
+}
+
+New-Item -ItemType Directory -Force $skillsRoot | Out-Null
+git clone https://github.com/Patrickpoix/maintainable-code-craft.git `
+    (Join-Path $skillsRoot "maintainable-code-craft")
+```
+
+### Project-local installation
+
+Use a Git submodule when a repository should carry the skill for everyone working in that project. This avoids hiding a nested Git repository inside the project.
+
+macOS or Linux:
+
+```bash
+mkdir -p .agents/skills
+git submodule add https://github.com/Patrickpoix/maintainable-code-craft.git \
+  .agents/skills/maintainable-code-craft
+```
+
+Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force ".agents\skills" | Out-Null
+git submodule add https://github.com/Patrickpoix/maintainable-code-craft.git `
+    ".agents\skills\maintainable-code-craft"
+```
+
+After cloning a project that already includes the skill, initialize it with:
+
+```bash
+git submodule update --init --recursive
+```
+
+Update a global installation with:
+
+```bash
+git -C <global-installation-path> pull --ff-only
+```
+
+Update the project submodule with:
+
+```bash
+git submodule update --remote .agents/skills/maintainable-code-craft
+```
+
+Restart Codex after installation so it can rediscover available skills.
+
+## Verify The Installation
+
+Start a new Codex task and invoke the skill explicitly:
 
 ```text
-<your-project>/.agents/skills/maintainable-code-craft/
+Use $maintainable-code-craft to review this module for naming, scope, and hidden side effects.
 ```
+
+The skill is designed to match coding tasks automatically, but explicit invocation is useful when you want to guarantee that it is included.
 
 ## Repository Layout
 
 ```text
 maintainable-code-craft/
-  assets/
-    banner.svg
-  SKILL.md
-  agents/
-    openai.yaml
-  README.md
-  README.zh-CN.md
-  LICENSE
+├── SKILL.md
+├── agents/
+│   └── openai.yaml
+├── references/
+│   └── data-and-financial.md
+├── assets/
+│   └── banner.svg
+├── README.md
+├── README.zh-CN.md
+└── LICENSE
 ```
 
-## Included Files
+- `SKILL.md` contains the compact default baseline.
+- `references/` contains guidance loaded only for matching domains.
+- `agents/openai.yaml` contains Codex-facing interface metadata.
+- `assets/banner.svg` provides the repository artwork.
 
-- `SKILL.md` contains the full maintainability workflow and writing rules.
-- `agents/openai.yaml` contains Codex-facing metadata for the skill interface.
-- `assets/banner.svg` provides the repository banner used in this README.
+## Contributing
 
-## Notes
-
-This repository contains only the files needed to reuse the skill. It does not include private Codex configuration, unrelated local skills, credentials, or personal environment data.
+Issues and pull requests are welcome. Keep proposed rules broadly useful, concise enough for repeated loading, and compatible with specialist skills.
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+Released under the [MIT License](./LICENSE).

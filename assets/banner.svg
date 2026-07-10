@@ -1,22 +1,71 @@
-<svg width="1280" height="320" viewBox="0 0 1280 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1280" height="320" rx="24" fill="#F4EFE6"/>
-  <rect x="32" y="32" width="1216" height="256" rx="20" fill="#FFFDF8"/>
-  <path d="M0 260C180 220 290 320 470 280C640 242 706 156 860 156C1019 156 1095 230 1280 196V320H0V260Z" fill="#E8D8C3"/>
-  <path d="M0 280C165 250 278 336 470 304C642 276 734 198 888 198C1028 198 1136 260 1280 236V320H0V280Z" fill="#D2B999"/>
-  <circle cx="184" cy="112" r="56" fill="#0F766E"/>
-  <path d="M184 74V150M146 112H222" stroke="#FFFDF8" stroke-width="18" stroke-linecap="round"/>
-  <rect x="286" y="82" width="392" height="22" rx="11" fill="#1F2937"/>
-  <rect x="286" y="118" width="312" height="14" rx="7" fill="#6B7280"/>
-  <rect x="286" y="146" width="270" height="14" rx="7" fill="#6B7280"/>
-  <rect x="286" y="210" width="144" height="40" rx="20" fill="#B45309"/>
-  <text x="358" y="236" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFDF8">Codex Skill</text>
-  <rect x="444" y="210" width="202" height="40" rx="20" fill="#1F2937"/>
-  <text x="545" y="236" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFDF8">Maintainable Code</text>
-  <text x="286" y="98" font-family="Georgia, Times New Roman, serif" font-size="44" font-weight="700" fill="#1F2937">Maintainable Code Craft</text>
-  <text x="286" y="186" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="400" fill="#374151">Readable code. Focused changes. Calm engineering taste.</text>
-  <rect x="1014" y="64" width="180" height="180" rx="24" fill="#1F2937"/>
-  <rect x="1044" y="94" width="120" height="18" rx="9" fill="#FFFDF8"/>
-  <rect x="1044" y="126" width="88" height="18" rx="9" fill="#C4B5A5"/>
-  <rect x="1044" y="168" width="64" height="64" rx="14" fill="#0F766E"/>
-  <path d="M1076 201L1092 217L1130 179" stroke="#FFFDF8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="banner-title banner-description">
+  <title id="banner-title">Maintainable Code Craft</title>
+  <desc id="banner-description">A maintainability baseline supporting specialist coding skills for tests, errors, user interfaces, and data.</desc>
+
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" stroke="#1F2937" stroke-opacity="0.055"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="360" rx="28" fill="#F3EFE7"/>
+  <rect x="24" y="24" width="1232" height="312" rx="22" fill="#FFFDF8"/>
+  <rect x="24" y="24" width="1232" height="312" rx="22" fill="url(#grid)"/>
+  <rect x="24.75" y="24.75" width="1230.5" height="310.5" rx="21.25" stroke="#D8C7AE" stroke-width="1.5"/>
+
+  <g aria-hidden="true">
+    <path d="M62 72V286" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="62" cy="72" r="7" fill="#B45309"/>
+    <circle cx="62" cy="286" r="7" fill="#0F766E"/>
+  </g>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="92" y="62" width="174" height="30" rx="15" fill="#E6DDD0"/>
+    <text x="179" y="82" text-anchor="middle" font-size="13" font-weight="700" letter-spacing="1.8" fill="#6B4F37">DEFAULT BASELINE</text>
+
+    <text x="92" y="151" font-family="Georgia, Times New Roman, serif" font-size="51" font-weight="700" fill="#1F2937">Maintainable Code Craft</text>
+    <text x="94" y="190" font-size="21" fill="#4B5563">Calm code. Focused changes. A stable layer beneath every specialist.</text>
+
+    <g font-size="13" font-weight="700" letter-spacing="1.2" fill="#374151">
+      <rect x="94" y="232" width="10" height="10" rx="2" fill="#0F766E"/>
+      <text x="116" y="242">CLEAR NAMES</text>
+      <rect x="235" y="232" width="10" height="10" rx="2" fill="#B45309"/>
+      <text x="257" y="242">SMALL DIFFS</text>
+      <rect x="376" y="232" width="10" height="10" rx="2" fill="#1F2937"/>
+      <text x="398" y="242">EXPLICIT ERRORS</text>
+    </g>
+
+    <text x="94" y="292" font-family="Consolas, Courier New, monospace" font-size="14" fill="#6B7280">baseline + specialist skill = maintainable delivery</text>
+  </g>
+
+  <g font-family="Consolas, Courier New, monospace">
+    <text x="1000" y="67" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#6B7280">SPECIALIST LAYER</text>
+
+    <rect x="790" y="100" width="92" height="124" rx="14" fill="#E5D7C4"/>
+    <path d="M813 134L822 143L842 122" stroke="#B45309" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="836" y="187" text-anchor="middle" font-size="13" font-weight="700" fill="#6B4F37">TESTS</text>
+
+    <rect x="894" y="122" width="108" height="102" rx="14" fill="#1F2937"/>
+    <path d="M923 147H973M923 159H961" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round"/>
+    <text x="948" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFDF8">ERRORS</text>
+
+    <rect x="1014" y="86" width="82" height="138" rx="14" fill="#C9DDD7"/>
+    <rect x="1035" y="116" width="40" height="30" rx="6" stroke="#0F766E" stroke-width="5"/>
+    <text x="1055" y="187" text-anchor="middle" font-size="13" font-weight="700" fill="#0F5F59">UI</text>
+
+    <rect x="1108" y="112" width="92" height="112" rx="14" fill="#B45309"/>
+    <path d="M1132 139H1176M1132 152H1166" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round"/>
+    <text x="1154" y="188" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFDF8">DATA</text>
+
+    <rect x="780" y="232" width="442" height="72" rx="18" fill="#1F2937" opacity="0.1"/>
+    <rect x="774" y="224" width="442" height="72" rx="18" fill="#0F766E"/>
+    <rect x="790" y="240" width="410" height="40" rx="10" stroke="#A7D0C8" stroke-width="1.5"/>
+    <text x="995" y="255" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.8" fill="#A7D0C8">STABLE FOUNDATION</text>
+    <text x="995" y="275" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFDF8">maintainable-code-craft</text>
+  </g>
+
+  <g aria-hidden="true" font-family="Consolas, Courier New, monospace" font-size="26" font-weight="700" fill="#B8A58D" opacity="0.5">
+    <text x="736" y="120">{</text>
+    <text x="1226" y="282">}</text>
+  </g>
 </svg>

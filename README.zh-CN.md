@@ -1,167 +1,194 @@
-# Maintainable Code Craft
-
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
 ![Maintainable Code Craft](./assets/banner.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-1f2937.svg)](./LICENSE)
-[![Codex Skill](https://img.shields.io/badge/Codex-Skill-0f766e.svg)](./agents/openai.yaml)
-[![Focus: Maintainability](https://img.shields.io/badge/Focus-Maintainability-b45309.svg)](./SKILL.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1f2937.svg)](./LICENSE)
+[![Codex Skill](https://img.shields.io/badge/Codex-skill-0f766e.svg)](./SKILL.md)
 
-写出三个月后再回头看，依然舒服、稳定、好维护的代码。
+让代码过三个月再回头改，依然清楚、顺手。
 
-`maintainable-code-craft` 是一个可复用的 Codex skill，适合希望 AI 生成的代码更冷静、更清晰、更易审查，而不是过度炫技、过度抽象、噪音很重的团队和个人。
+`maintainable-code-craft` 是一个可复用的 Codex skill。它给写代码和改代码的任务提供一套稳定的维护性基线，让改动更克制、更容易审查，同时把具体任务的专业流程留给对应的专项 skill。
 
-它会把 Codex 往这些方向拉：
+> 基线保持稳定，专项能力随任务切换。
 
-- 更好的命名
-- 更小的改动范围
-- 更清楚的结构
-- 更安全的配置方式
-- 更明确的错误处理
-- 更适合交给真人同事继续维护的代码
+## 它是基础层，不是整套工具箱
 
-## 默认基线 Skill
+对于写代码、改代码这类任务，这个 skill 负责守住几件基础但重要的事：
 
-对于“写代码 / 改代码”这类任务，这个 skill 的定位是默认基线 skill。
+- 命名清楚，代码容易读
+- 改动范围可控，尊重项目原有习惯
+- 结构不过度，副作用看得见
+- 错误明确，配置安全
+- 不随意增加依赖，交付前做必要验证
 
-这意味着：
-
-- 它是维护性、命名、结构、范围控制和工程品味的稳定基础层
-- 它通常会和专项 skill 一起使用，而不是替代别的 skill
-- 它天然不是排他性的
-- 当 Codex 在写代码、改代码、重构、调试、审查代码时，它都适合作为常驻基础层存在
-
-在实际执行里，`maintainable-code-craft` 往往会和这些 skill 协同：
-
-- `tdd-workflow`：适合测试驱动的功能开发和 bug 修复
-- `error-handling`：适合重试、降级、失败路径和错误设计
-- `verification-loop`：适合最终验证和交付前检查
-- 各类数据库专项 skill：适合 schema、query、migration、ORM 相关工作
-- UI / design 类 skill：适合前端界面和体验优化任务
-
-你可以把它理解成“维护性基础层”，而不是“任务专项替代品”。
-
-## 为什么大家会用它
-
-AI 可以把代码写得很快，但“写得快”不等于“以后好维护”。
-
-这个 skill 适合你想让 Codex 从“追求新奇和花哨”切换到“追求工程品味”的场景：
-
-- 用最简单且安全的设计解决真实问题
-- 尽量保留项目本地约定，而不是一上来重写一大片
-- 让副作用足够显眼
-- 让公式、评分逻辑、数据处理链路都可审计
-- 避免含糊命名、隐藏魔法和依赖膨胀
-
-如果你想要的是“无聊，但无聊得很专业”的代码风格，这个 skill 很适合。
-
-## 它会带来什么变化
-
-它不是把 Codex 推向这种输出：
+它不排斥其他 skill。真正执行任务时，通常把它和专项 skill 一起使用。
 
 ```text
-Refactor this into a flexible manager with helper abstractions and utility layers.
+             tdd-workflow      error-handling      interface-design
+                    \                |                /
+                     \             专项层             /
+                      +------------------------------+
+                      |  maintainable-code-craft     |
+                      |       稳定的维护性基础层       |
+                      +------------------------------+
 ```
 
-而是更接近这种输出：
+## 如何组合使用
+
+| 任务 | 建议组合 |
+|---|---|
+| 开发功能或修复 bug | `maintainable-code-craft` + `tdd-workflow` |
+| 设计失败路径与降级逻辑 | `maintainable-code-craft` + `error-handling` |
+| 完成一次重要改动 | `maintainable-code-craft` + `verification-loop` |
+| 修改数据库结构或查询 | `maintainable-code-craft` + 数据库专项 skill |
+| 开发正式的前端界面 | `maintainable-code-craft` + UI/design skill |
+
+专项 skill 负责更深入的工作流程，`maintainable-code-craft` 负责让最终代码清楚、克制、方便维护。
+
+## 实际会有什么不同
+
+缺少维护性约束时，AI 编码很容易把一个局部任务扩大成大范围重写，出现含糊命名、多余抽象或隐藏副作用。
+
+使用这个 skill 后，Codex 会被要求：
+
+- 动手前先了解现有项目
+- 只做解决问题所需的最小安全改动
+- 除非原有约定确实有害，否则继续沿用
+- 让错误、配置和副作用保持可见
+- 只有在确实降低复杂度时才增加抽象或依赖
+- 按改动风险选择合适的验证方式
+
+### 示例
+
+不要只给一个范围很大的要求：
 
 ```text
-Keep the change small. Use clear names. Make file writes explicit. Do not introduce new abstractions unless they remove real complexity.
+Refactor this module into a flexible architecture with reusable managers and utilities.
 ```
 
-通常结果会是：
+可以把边界说得更清楚：
 
-- 代码更容易 review
-- diff 更容易让人放心
-- 更少无关重写
-- 更少隐藏行为
-- 更容易交接给下一个开发者
-
-## 适用场景
-
-这个 skill 很适合：
-
-- 应用代码
-- 脚本和自动化
-- 测试
-- 爬虫和 API client
-- 数据管道
-- 金融计算和评分逻辑
-- UI 和 dashboard 代码
-- 重构和代码审查
+```text
+Use $maintainable-code-craft to refactor this module without changing behavior.
+Keep the diff small, preserve local conventions, and make file writes explicit.
+```
 
 ## 核心原则
 
-- 命名表达意图，不用占位符式命名
-- 函数聚焦单一责任
-- 错误要可见、可定位、可处理
-- 原始数据、标准化数据、派生结果尽量分层
-- 优先遵守本地代码风格，而不是为了“通用最佳实践”制造 churn
-- 只有在确实降低复杂度或风险时才新增依赖
+- 命名表达真实意图，不用占位符凑合
+- 函数职责集中，副作用一眼能看出来
+- 优先保持项目内部一致，不为了套“最佳实践”制造无关改动
+- 不用空 catch 或假成功掩盖失败
+- 不把密钥和环境相关配置写进代码
+- 重要行为和边界情况尽量有测试
+- 问题已经解决清楚时，不再继续增加结构
 
-## 快速开始
-
-示例 prompt：
-
-```text
-Use maintainable-code-craft to refactor this module without changing behavior.
-```
-
-```text
-Use maintainable-code-craft to review this patch for naming, structure, and maintainability issues.
-```
-
-```text
-Use maintainable-code-craft while implementing this feature and keep the change small and readable.
-```
-
-```text
-Use maintainable-code-craft to clean up this script and make error handling explicit.
-```
+数据处理和金融计算的补充规则放在按需参考文件中，不会跟着每一个普通编码任务一起加载。
 
 ## 安装
 
 ### 全局安装
 
-把这个目录放到：
+如果希望所有项目都能使用这个 skill，可以安装到全局目录。
 
-```text
-~/.codex/skills/maintainable-code-craft/
+macOS 或 Linux：
+
+```bash
+skills_root="${CODEX_HOME:-$HOME/.codex}/skills"
+mkdir -p "$skills_root"
+git clone https://github.com/Patrickpoix/maintainable-code-craft.git \
+  "$skills_root/maintainable-code-craft"
+```
+
+Windows PowerShell：
+
+```powershell
+$skillsRoot = if ($env:CODEX_HOME) {
+    Join-Path $env:CODEX_HOME "skills"
+} else {
+    Join-Path $HOME ".codex\skills"
+}
+
+New-Item -ItemType Directory -Force $skillsRoot | Out-Null
+git clone https://github.com/Patrickpoix/maintainable-code-craft.git `
+    (Join-Path $skillsRoot "maintainable-code-craft")
 ```
 
 ### 项目级安装
 
-把这个目录放到：
+如果希望仓库里的每位协作者都能使用，建议通过 Git submodule 安装。这样不会在项目里藏一个无法正常跟踪的嵌套 Git 仓库。
+
+macOS 或 Linux：
+
+```bash
+mkdir -p .agents/skills
+git submodule add https://github.com/Patrickpoix/maintainable-code-craft.git \
+  .agents/skills/maintainable-code-craft
+```
+
+Windows PowerShell：
+
+```powershell
+New-Item -ItemType Directory -Force ".agents\skills" | Out-Null
+git submodule add https://github.com/Patrickpoix/maintainable-code-craft.git `
+    ".agents\skills\maintainable-code-craft"
+```
+
+克隆一个已经包含该 skill 的项目后，运行下面的命令完成初始化：
+
+```bash
+git submodule update --init --recursive
+```
+
+更新全局安装：
+
+```bash
+git -C <全局安装路径> pull --ff-only
+```
+
+更新项目里的 submodule：
+
+```bash
+git submodule update --remote .agents/skills/maintainable-code-craft
+```
+
+安装完成后重启 Codex，让它重新发现可用的 skills。
+
+## 检查是否安装成功
+
+新建一个 Codex 任务，显式调用这个 skill：
 
 ```text
-<your-project>/.agents/skills/maintainable-code-craft/
+Use $maintainable-code-craft to review this module for naming, scope, and hidden side effects.
 ```
+
+它的描述已经覆盖常见编码任务，因此 Codex 可以自动选择它；如果希望确保本次任务一定使用，直接写出 `$maintainable-code-craft` 最稳妥。
 
 ## 仓库结构
 
 ```text
 maintainable-code-craft/
-  assets/
-    banner.svg
-  SKILL.md
-  agents/
-    openai.yaml
-  README.md
-  README.zh-CN.md
-  LICENSE
+├── SKILL.md
+├── agents/
+│   └── openai.yaml
+├── references/
+│   └── data-and-financial.md
+├── assets/
+│   └── banner.svg
+├── README.md
+├── README.zh-CN.md
+└── LICENSE
 ```
 
-## 包含文件
+- `SKILL.md`：精简后的默认基线规则
+- `references/`：只在对应任务中加载的专项说明
+- `agents/openai.yaml`：Codex 使用的界面元数据
+- `assets/banner.svg`：README 顶部横幅
 
-- `SKILL.md`：完整的维护性规则和工作方式说明
-- `agents/openai.yaml`：Codex 侧的 skill 元数据
-- `assets/banner.svg`：README 使用的仓库横幅图
+## 参与改进
 
-## 说明
-
-这个仓库只包含复用该 skill 所需的文件，不包含你的私有 Codex 配置、其他本地 skill、凭据或个人环境数据。
+欢迎提交 Issue 或 Pull Request。新增规则应尽量适用于不同项目，篇幅要适合反复加载，并且能和专项 skill 一起工作。
 
 ## License
 
-MIT。见 [LICENSE](./LICENSE)。
+本项目采用 [MIT License](./LICENSE)。

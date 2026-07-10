@@ -1,293 +1,147 @@
 ---
 name: maintainable-code-craft
-description: Apply maintainable, human-readable engineering standards whenever Codex writes, edits, refactors, debugs, reviews, or generates code. Use for application code, scripts, tests, crawlers, API clients, data pipelines, financial calculations, UI/dashboard code, automation, configuration, and architecture work. Emphasize clear naming, small focused changes, idiomatic local style, explicit errors, safe configuration, justified dependencies, auditable data logic, and avoiding over-engineering.
+description: Apply a default, non-exclusive maintainability baseline whenever Codex writes, edits, refactors, debugs, reviews, or generates code or configuration. Use alongside task-specific skills for application code, scripts, tests, automation, APIs, data pipelines, UI code, and architecture work. Emphasize clear naming, small focused changes, idiomatic local style, explicit errors, safe configuration, justified dependencies, and avoiding over-engineering.
 ---
 
 # Maintainable Code Craft
 
-Write code like a careful engineer who expects to maintain this project for months.
+Write code for the teammate who will debug it months from now.
 
-Prefer code that is clear, idiomatic, boring in a good way, easy to debug, and consistent with the existing codebase.
+Prefer clear, idiomatic, unsurprising code over cleverness or demo appeal. Choose the simplest design that safely solves the real task.
 
-Do not optimize for cleverness or demo appeal. Choose the simplest design that safely solves the real task.
+## Baseline Role
 
-## Working Rules
+Use this skill as the maintainability layer, not as a replacement for specialist skills.
+
+- Keep it active for code writing, editing, refactoring, debugging, and review.
+- Combine it with task-specific skills when they add a deeper workflow.
+- Let specialist guidance control its domain while this skill controls naming, structure, scope, and engineering taste.
+
+Common combinations include:
+
+- `tdd-workflow` for feature work and bug fixes
+- `error-handling` for retries, fallbacks, and failure design
+- `verification-loop` for final validation
+- Database-specific skills for schemas, queries, migrations, and ORMs
+- UI and design skills for interface-heavy work
+- Production and security skills for operational risk
+
+## Working Sequence
 
 Before editing an existing project:
 
-1. Inspect structure, naming, imports, configuration, error handling, and tests.
-2. Preserve local conventions unless they are clearly harmful.
-3. Make the smallest safe change that solves the task.
-4. Avoid unrelated rewrites, formatting churn, and dependency changes.
-5. Introduce abstractions only when they remove real complexity or isolate unstable external behavior.
+1. Inspect the relevant structure, naming, imports, configuration, errors, and tests.
+2. Identify the smallest change that satisfies the request.
+3. Preserve local conventions unless they are clearly harmful.
+4. Implement without unrelated rewrites, formatting churn, or dependency changes.
+5. Verify the changed behavior at a level proportional to its risk.
 
-When deeper guidance is needed and the relevant specialist skill is available, use it instead of duplicating the full workflow here:
-
-* Use `error-handling` for complex error taxonomy, retries, fallback behavior, and user-facing failure design.
-* Use `tdd-workflow` for feature work or bug fixes where tests should drive implementation.
-* Use `verification-loop` before finalizing significant code changes.
-* Use database-specific skills for schema, query, migration, and ORM work.
-* Use UI/design skills for substantial frontend interface work.
-* Use production or audit skills for deployment, security, reliability, and operational risk review.
-
-This skill remains the default baseline for code taste, maintainability, naming, structure, and scope control.
+Introduce an abstraction only when it removes real duplication, clarifies a domain boundary, or isolates unstable external behavior.
 
 ## Naming
 
-Use names that explain intent and domain meaning.
+Choose names that explain intent and domain meaning.
 
-Prefer names like:
+Prefer names such as:
 
-* `portfolio_snapshot`
-* `valuation_score`
-* `risk_adjusted_score`
-* `fetch_seeking_alpha_ratings`
-* `is_market_data_stale`
-* `save_portfolio_nav_snapshot`
+- `account_summary`
+- `calculate_total_price`
+- `is_cache_stale`
+- `save_report_snapshot`
 
-Avoid vague names like:
+Avoid vague names such as:
 
-* `data`
-* `thing`
-* `stuff`
-* `obj`
-* `item`
-* `result2`
-* `final_final`
-* unexplained abbreviations
-* pinyin identifiers
-* misleading names
+- `data`
+- `thing`
+- `stuff`
+- `obj`
+- `result2`
+- `final_final`
+- unexplained abbreviations
+- pinyin identifiers
 
-Short names such as `i`, `row`, or `tmp` are acceptable only in tiny local scopes where the meaning is obvious.
+Use short names such as `i`, `row`, or `tmp` only in tiny scopes where their meaning is obvious.
 
-Boolean names should read like true-or-false statements, such as:
+Name booleans as statements, such as `is_active`, `has_valid_token`, `can_retry`, or `should_refresh`.
 
-* `is_active`
-* `has_valid_token`
-* `can_retry`
-* `should_rebalance`
-* `requires_refresh`
+## Functions And Side Effects
 
-## Functions
+Keep each function focused on one responsibility. Separate validation, fetching, normalization, calculation, persistence, and presentation when combining them would hide behavior.
 
-Keep functions focused on one clear responsibility:
+Make side effects obvious in names:
 
-* validate input
-* fetch data
-* normalize data
-* calculate a value
-* transform a structure
-* persist a result
-* render output
-* coordinate a small workflow
-
-Avoid functions that fetch, transform, calculate, save, log, and render all at once.
-
-Use side-effect names for side effects, such as:
-
-* `save_to_database`
-* `write_manifest_file`
-* `update_crawler_state`
-* `delete_stale_cache`
-* `send_report_email`
-
-Use calculation names for pure or mostly pure logic, such as:
-
-* `calculate_weighted_score`
-* `normalize_rating_history`
-* `build_portfolio_snapshot`
-* `rank_candidates_by_signal`
+- `write_manifest_file`
+- `update_crawler_state`
+- `delete_stale_cache`
+- `send_report_email`
 
 Do not hide file writes, database updates, network calls, browser automation, or global state changes behind names that sound pure.
 
 ## Structure
 
-Use structure only when it improves clarity.
+Use structure only when it improves navigation or separates responsibilities.
 
-For medium or large projects, separate:
+For medium or large projects, separate configuration, external clients, data access, business logic, entrypoints, and tests when those concerns evolve independently.
 
-* configuration
-* external clients
-* data access
-* business logic
-* scoring or calculation logic
-* UI/API/CLI entrypoints
-* tests
-* operational scripts
-
-Do not force a multi-folder architecture onto a small one-file script.
-
-Grow structure gradually when the current shape starts hiding responsibilities.
+Do not force a multi-folder architecture onto a small script. Grow structure when the current shape starts hiding responsibilities.
 
 ## Errors And Configuration
 
-Never silently swallow errors.
+Never silently swallow errors or return fake success after a failure.
 
-Avoid:
+Handle expected failures deliberately, including invalid input, missing configuration, malformed data, timeouts, rate limits, authentication failures, permission issues, and empty external responses.
 
-* empty catches
-* `except: pass`
-* broad catch-all handlers without context
-* fake success responses after failures
+Write error messages that explain what failed and what the next developer should check.
 
-Handle expected failure modes deliberately:
-
-* missing config
-* invalid input
-* missing files
-* malformed data
-* timeouts
-* rate limits
-* auth failures
-* database failures
-* empty external responses
-* permission issues
-* stale data
-
-Use clear error messages with enough context for the next developer to know what failed and what to check.
-
-Never hard-code:
-
-* secrets
-* tokens
-* cookies
-* passwords
-* user-specific absolute paths
-* environment-specific ports
-* account credentials
-* security codes
-
-Use the project's existing config system. If none exists, prefer environment variables or a small config file.
-
-Never log secrets, tokens, cookies, passwords, private account data, or sensitive financial account details.
+Never hard-code or log secrets, tokens, cookies, passwords, account credentials, user-specific absolute paths, or environment-specific ports. Use the project's existing configuration system; if none exists, prefer environment variables or a small documented config file.
 
 ## Types And Contracts
 
-Use type annotations when the language supports them.
+Use explicit contracts at system and module boundaries.
 
-For Python:
+- Type public functions and important internal functions when the language supports it.
+- Keep external response shapes separate from normalized domain models when practical.
+- Avoid unstructured dictionaries or `any` values crossing multiple layers without validation.
+- Make optional, missing, stale, and partial states explicit.
 
-* type public functions and important internal functions
-* prefer typed domain objects over passing unstructured dictionaries through many layers
-* keep raw external data separate from normalized internal models when practical
+## Domain Guidance
 
-For TypeScript:
+For data pipelines, scoring systems, market data, portfolio logic, or financial calculations, read [references/data-and-financial.md](references/data-and-financial.md) before editing the relevant logic.
 
-* define types for API responses, component props, and domain models
-* avoid `any` unless there is a clear reason
-* keep external response types separate from normalized internal types
-
-For Go, Rust, Java, and similar languages:
-
-* use explicit structs, classes, and domain types
-* keep serialization formats separate from business models when helpful
-
-## Data And Financial Logic
-
-For data-heavy, crawler, market, portfolio, or financial code:
-
-* keep raw data, normalized data, derived metrics, scores, signals, and final decisions separate
-* make formulas explicit and auditable
-* avoid hidden magic constants
-* name intermediate values clearly
-* preserve enough metadata to trace how an output was produced
-* handle missing data deliberately
-* do not fabricate data
-* do not silently fill missing values with fake or misleading defaults
-* make stale data and partial pipeline failures visible
-
-Use names such as:
-
-* `valuation_score`
-* `growth_score`
-* `profitability_score`
-* `momentum_score`
-* `revision_score`
-* `risk_penalty`
-* `composite_score`
-
-Avoid names such as:
-
-* `score1`
-* `score2`
-* `factor_a`
-* `final_final_score`
-
-## UI And Dashboard Code
-
-For UI, dashboards, and app code:
-
-* keep components focused
-* separate data fetching from presentation when practical
-* make loading, empty, error, stale, blocked, partial, and success states explicit
-* avoid deeply nested conditional rendering
-* use descriptive prop names
-* keep operational state visible for crawlers, imports, scoring jobs, portfolio builds, and report generation
+For substantial UI, database, security, testing, or deployment work, use the appropriate specialist skill instead of expanding this baseline with domain-specific instructions.
 
 ## Tests And Dependencies
 
-When changing important logic, add or update focused tests when feasible, especially for:
+Add or update focused tests for bug fixes, parsers, calculations, validation, state transitions, and edge cases when feasible.
 
-* bug fixes
-* parsers
-* scoring formulas
-* financial calculations
-* data normalization
-* validation logic
-* state transitions
-* API response mapping
-* portfolio construction
-* edge cases
-
-Do not rely on live external services for normal unit tests unless the project already has integration-test infrastructure.
+Do not rely on live external services for normal unit tests unless the project already provides integration-test infrastructure.
 
 Before adding a dependency:
 
 1. Check whether the standard library is enough.
 2. Check whether an existing dependency is enough.
-3. Add a new dependency only when it clearly reduces risk or complexity.
-4. Explain why the dependency is justified.
-
-Do not add dependencies only to make code look modern.
+3. Add a dependency only when it clearly reduces risk or complexity.
+4. Explain why it is justified.
 
 ## Comments
 
-Write comments to explain why, not what.
+Write comments to explain why, not what. Use them for business rules, external quirks, compatibility constraints, non-obvious tradeoffs, and intentional limitations.
 
-Useful comments explain:
-
-* business rules
-* external API quirks
-* non-obvious tradeoffs
-* compatibility constraints
-* migration assumptions
-* intentional limitations
-
-Do not bury obvious code under excessive comments.
+Do not bury straightforward code under commentary.
 
 ## Final Check
 
-Before finalizing code, check:
+Before finalizing, confirm that:
 
-* names are clear and human-readable
-* no pinyin identifiers were introduced
-* functions are focused
-* side effects are obvious
-* existing project style is preserved
-* secrets and sensitive data are not hard-coded or logged
-* configuration is not scattered
-* errors are not silently swallowed
-* dependencies are justified
-* important logic has tests or clear manual verification
-* data and financial formulas are auditable
-* missing or stale data is handled deliberately
-* the solution is not over-engineered
+- Names are clear and human-readable.
+- Functions are focused and side effects are visible.
+- Existing project style is preserved.
+- The change stays within the requested scope.
+- Errors are explicit and actionable.
+- Secrets and environment-specific values are not hard-coded or logged.
+- Dependencies are justified.
+- Important behavior has tests or clear manual verification.
+- Missing, stale, and partial data are handled deliberately.
+- The solution is no more complex than the problem requires.
 
-For meaningful code changes, summarize:
-
-1. what changed
-2. why this approach fits the codebase
-3. how it was verified
-4. any remaining risk
-
-Keep tiny edits concise.
+For meaningful changes, summarize what changed, why it fits the codebase, how it was verified, and any remaining risk. Keep tiny edits concise.
