@@ -1,0 +1,6 @@
+interface:
+  display_name: "Maintainable Code Craft"
+  short_description: "General maintainability baseline for software changes"
+  default_prompt: "Use maintainable-code-craft as a domain-neutral engineering baseline: understand the real caller, keep ownership clear, avoid speculative complexity, make the smallest complete change, inspect the real result, verify the changed claim, and leave the workspace deliberate."
+policy:
+  allow_implicit_invocation: true
