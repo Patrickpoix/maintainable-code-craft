@@ -1,217 +1,171 @@
 ---
 name: maintainable-code-craft
-description: Use as a general engineering baseline when writing, editing, refactoring, reviewing, or generating code. Prefer clear ownership, direct designs, explicit contracts, proportionate verification, and the simplest implementation that fully solves the current problem. Preserve project-local rules, avoid speculative abstraction, and leave the codebase easier to understand than before.
+description: "Default engineering method for implementing, modifying, refactoring, or code-reviewing software and engineering config / 代码实现、修改、重构、代码审查. Not for unknown-root-cause debugging, test-first or regression design, security review, completion verification, or prose-only plans."
 ---
 
 # Maintainable Code Craft
 
-Use this skill as a general maintainability baseline for software work. It is intentionally domain-neutral: project-specific architecture, policy, operational procedures, and business rules belong in the project that owns them.
+Use this as the default engineering discipline for code work. The aim is not to apply more patterns; it is to make the sequence of decisions resemble a careful maintainer: understand the current system, decide whether code should exist, freeze enough of the design to avoid inventing architecture mid-edit, make the smallest **sufficient** durable vertical change that fully closes the selected responsibility, inspect the real result, remove temporary complexity, verify the changed claim, clean the workspace, and stop at the correct boundary.
 
-The goal is not to maximize patterns, layers, checks, or documentation. The goal is to make the smallest complete change that a future maintainer can understand, verify, and safely extend.
+Project `AGENTS.md`, project contracts, user instructions, and the real caller remain authoritative. Global/project AGENTS own hard policy such as architecture existence, capability honesty, compatibility, safety, and authorization; this skill focuses on executing those policies through a natural engineering lifecycle. `verification-loop` owns generic verification evidence, while specialist/project gates own their narrower verdicts.
 
-## 1. Orient to the current codebase
+The phases below are a **mental work cycle, not a requirement to create plans, matrices, registries, or worklogs**. Collapse them naturally for small tasks and expand them only when risk or scope warrants it.
 
-Before a non-trivial change, establish the current state that matters to the task:
+Treat optional uncertainty reduction as optional. Extra checks, review passes, hardening, or evidence artifacts enter the main path only when they directly serve the requested outcome, can change a current decision, settle a still-live uncertainty, or protect a current caller/contract/boundary. "This could improve confidence" is not by itself a reason to add work; normal implementation abstractions are judged by the real-caller and complexity rules below.
 
-- identify the relevant entrypoint, modules, configuration, tests, and local instructions;
-- inspect existing conventions before introducing new ones;
-- distinguish source code from generated output, temporary files, and runtime artifacts;
-- preserve unrelated user changes;
-- prefer current source and executable behavior over stale notes or assumptions.
+## Default reflexes
 
-For a tiny, obvious edit, keep this step tiny as well.
+When the pull is toward the left column, take the right one unless current evidence says otherwise:
 
-## 2. Trace the real use path
+| Tempting move | Default |
+| --- | --- |
+| Add a helper, guard, validator, or adapter to contain a risk | Find the owner whose contract makes the risk impossible and fix it there |
+| Keep the old path as a fallback "until later" | Cut real callers over and delete it in the same change; keep only a real external/persisted edge, with an owner and removal condition |
+| Split a function because it is long | Split where callers, side effects, or authority differ: a cohesive 80-line parser with one caller stays whole; a 15-line function that decides policy, writes storage, and emits events splits |
+| Add state so verification or recovery can check something | Read the owner's existing fact; projections render, they do not store |
+| Land one responsibility as several checkpoint patches | Land one complete ownership unit; checkpoint only at a real recovery boundary |
+| Guard against a plausible but unobserved failure | Name the failure and what produces it; if you cannot, do not add the guard |
+| Comment what the code does | Comment why this owner, which simpler-looking alternative is wrong, and what real failure the invariant prevents |
+| Add tests or checks for confidence | Add the one check that fails if the claim is false |
 
-Read code in the direction it is actually used:
+Investigation may be as adversarial and exhaustive as the problem needs (`systematic-debugging`); the shipped diff contains only what the chosen owner needs. Evidence gathered to find the owner does not become production code.
 
-`input -> caller -> responsibility -> side effect or result -> observable output`
+## JIT references
 
-Do not justify an abstraction merely because a test, export, or old document refers to it. Prefer evidence from supported callers and current behavior.
+Keep the entry lightweight. Load a reference only when the current responsibility needs its detail:
 
-Before adding a new manager, registry, adapter, router, framework, or generic helper, ask whether the existing design can express the required behavior directly.
+- `references/architecture-and-refactoring.md` — non-trivial architecture, ownership migration, defensive machinery, compatibility, large decomposition, or repository refactor.
+- `references/implementation-and-review.md` — difficult implementation shape, environment-dependent values, dependency choice, comments/reviewability, workaround cleanup, or a non-trivial semantic diff.
+- `references/long-work-and-boundaries.md` — multi-session work, runtime-owned checkout, recovery boundary, persisted-data lifecycle, task-owned process cleanup, or an external future gate.
 
-## 3. Decide whether complexity earns its place
+Do not preload these references merely because they exist. The main entry is sufficient for ordinary implementation and local refactoring.
 
-Every durable abstraction has a maintenance cost. Add one when it removes a real burden such as duplicated semantics, mixed responsibilities, unstable external behavior, or repeated non-trivial work.
+## 1. ORIENT & UNDERSTAND — establish action-time reality
 
-Do not add structure solely for hypothetical future flexibility.
+Before a non-trivial edit, establish only the current facts needed to act: workspace/root, branch/worktree and dirty state when relevant, project instructions, current runtime/executable when it owns behavior, and the user's requested outcome. Current source/runtime/persisted truth outranks stale chat, plans, Worklogs, or remembered architecture.
 
-Treat complexity metrics as signals, not targets. A long function can be cohesive; a short function can still hide too much indirection. Judge the design by how easily a maintainer can answer:
+Read in the direction of actual use:
 
-- What responsibility does this code own?
-- Who calls it?
-- What inputs and outputs matter?
-- What side effects occur?
-- What failure states are meaningful?
-- Where is the authoritative implementation of the rule?
+`user outcome -> real caller -> current input -> canonical owner -> data/control flow -> observable output`
 
-## 4. Design one clear path
+- Inspect the relevant entrypoint, owner, adjacent implementation, configuration, error path, callers, and local conventions before inventing an abstraction.
+- Treat entrypoints, routes, handlers, CLI commands, UI actions, and compatibility shims by their observable contract, not by their filename or implementation shape. A thin wrapper may still be the shipped external boundary; an apparently substantial module may be dead if no real caller reaches it. Remove or replace one only after tracing the actual caller and preserving or deliberately retiring the behavior it owns.
+- Identify the semantic owner of facts that cross layers—state, metrics, identity, provenance, freshness, or authority—not only the function that computes them. A projection may render or transport an owned fact; it should not quietly become a second source of truth.
+- Preserve epistemic distinctions the caller can observe. `missing`, `empty`, `unavailable`, `failed`, `stale`, `unknown`, `not measured`, and measured zero are different claims; do not collapse them for convenience.
+- Tests, docs, barrels/re-exports, audits, and historical artifacts are evidence, not substitutes for a live production caller.
+- Resume existing work from current persisted/worktree state rather than reconstructing a second implementation from memory.
+- Distinguish source, config, tests, generated output, caches, runtime state, experiments, backups, and history; co-location does not give them one lifecycle.
+- When a failure may be environmental, classify source logic vs configuration/runtime/shell/encoding/path/cwd/invocation/external dependency before rewriting product code. Preserve the project's primary language and existing stack unless evidence requires change.
+- Prefer a known working local behavior or accepted product artifact over recreating a generic best-practice version.
+- Compare external alternatives only when the task genuinely introduces a new architecture/dependency/infrastructure capability.
 
-Prefer a direct path from real input to real output.
+If caller liveness, defensive machinery, compatibility, or architecture survival is the actual question, load `references/architecture-and-refactoring.md`.
 
-For a substantial change, form a compact working contract before editing:
+## 2. DECIDE & DESIGN — choose the shortest durable path
 
-- requested outcome;
-- relevant caller;
-- responsibility being changed;
-- important inputs, outputs, and side effects;
-- protected behavior or compatibility;
-- expected scope;
-- smallest useful verification.
+Prefer subtraction and native capability first: can the current canonical owner solve the problem directly, can obsolete code be retired, or can a native/runtime capability replace a custom Manager/Registry/Adapter/cache/recovery layer? Complexity needs a present owner and consequence, not hypothetical flexibility.
 
-This is a reasoning aid, not a requirement to create a design document.
+Freeze enough design before substantive edits to answer:
 
-Keep one authoritative implementation for each business rule or transformation. Repetition of syntax is often cheaper than duplicated semantic ownership.
+`requested outcome -> real caller -> current owner -> target owner -> key input/output/side effects -> protected invariants -> ordered cutover -> smallest falsifying proof`
 
-Separate concerns when they truly change independently. Common boundaries include acquisition, domain logic, persistence, orchestration, and presentation. Do not split them mechanically when a single cohesive unit is clearer.
+This is a working model, not a required plan artifact. Small fixes collapse naturally; non-trivial work should not use production edits as the mechanism for discovering architecture.
 
-Pass explicit data instead of hiding dependencies in broad mutable context objects or globals. A wrapper that merely forwards the same information through another file is usually not an abstraction improvement.
+- Keep one authoritative implementation per business rule or transformation. DRY semantics, not superficial syntax.
+- Before adding a cache, memoizer, index, alternate fast path, or optimization framework, measure the real caller cost with equivalent semantics. An immaterial cost is evidence to keep the simpler design.
+- Keep orchestration readable as workflow stages; stage code owns calculations/side effects, orchestration owns sequencing and stop conditions.
+- Pass explicit named facts instead of hidden globals or giant generic context bags. An extraction should retire real cognitive burden, not just move the same state across another file boundary.
+- Define meaningful empty/partial/blocked/failed/complete states when callers distinguish them.
+- Validate at the canonical trust boundary, then trust the established internal contract until a new independent boundary appears.
+- Compatibility belongs at the real external/persisted edge and needs an owner plus removal condition; do not preserve dead internal shape merely because tests import it.
 
-## 5. Refactor by responsibility, not appearance
+For substantial structural refactors, preserve this order:
 
-Before polishing complicated code, confirm that the responsibility is still needed by a current caller.
+`module internal -> module connection -> physical move`
 
-For substantial decomposition:
+Stabilize responsibility at the current path, make producer/consumer handoff explicit and cut real callers to one owner, then move files. Do not mass-move a tree and use compiler/import failures to discover architecture. Treat unexpected blast radius as evidence of a wrong seam or hidden dependency, not permission for cascade patching.
 
-1. make the responsibility understandable at its current location;
-2. define a clear interface between producer and consumer;
-3. migrate real callers to the new boundary;
-4. remove obsolete duplicate ownership;
-5. move files only when the semantic boundary is already clear.
+Load `references/architecture-and-refactoring.md` when these condensed rules are not enough for the current architecture/refactor decision.
 
-Do not move a large tree first and use the resulting errors to discover the architecture.
+## 3. IMPLEMENT & REFINE — make one natural semantic change
 
-Unexpected blast radius is diagnostic evidence. When a bounded change suddenly appears to require unrelated edits, identify the first broken assumption before continuing.
+Make one coherent semantic batch at a time. Do not mix a behavior change with unrelated formatter sweeps, generated metadata churn, broad lint cleanup, or opportunistic refactors.
 
-## 6. Write natural, reviewable code
+- Prefer direct, domain-named, local, predictable code over clever generic abstractions.
+- Treat names as contracts: fields, APIs, metrics, and UI labels describe what is actually known or measured, not a convenient approximation that future code could mistake for stronger truth.
+- Use guard clauses where they clarify invalid or terminal cases; do not mechanically flatten every two-way branch.
+- Never swallow failures or return fake success. Preserve the primary cause and enough operation/resource context to diagnose it without leaking secrets.
+- Give external calls/subprocesses bounded timeout/cancellation behavior when hanging violates the caller contract. Add `error-handling` only when a real retry/partial-data/user-facing failure contract needs design.
+- Keep policy separate from transport/storage/browser/framework mechanism and follow repository-local language/runtime conventions before importing generic style rules.
+- Values that change independently of source belong to the existing config/env/input/data-contract owner; stable protocol/schema/enum/math constants and isolated fixtures may remain literal when that is clearer.
+- Make time, randomness, locale, units, rounding, missing-data policy, and concurrency explicit where they affect correctness or reproducibility.
 
-Prefer code that is direct, local, predictable, and named after the domain concept it represents.
+After the first working implementation, reread the changed responsibility as a maintainer before declaring it done.
 
-- Keep each function focused on a coherent responsibility.
-- Make side effects visible in names and structure.
-- Use guard clauses when they clarify invalid or terminal cases.
-- Keep error handling explicit; do not swallow failures or return fake success.
-- Follow the repository's language, formatter, linter, and type conventions.
-- Reuse the standard library and existing dependencies before adding a package.
-- Add a dependency only when it materially reduces current complexity or risk.
-- Keep configuration outside source when values vary independently of the code.
-- Make time, randomness, units, rounding, and concurrency explicit when they affect correctness.
+Look specifically for:
 
-Do not turn general guidance into mechanical literal elimination or style churn. Protocol constants, enum values, schema fields, and clear test fixtures may remain literal when that is the most readable representation.
+- duplicated business rules or divergent status vocabularies;
+- one-line forwarding wrappers and abstractions that reduced no concept;
+- oversized context bags or hidden mutable state;
+- excessive validation after a trusted boundary;
+- temporary debug code, imports, compatibility, feature flags, or workarounds;
+- awkward names, surprising side effects, or implementation order that obscures the real workflow;
+- accidental EOL/formatter/generated churn mixed into the semantic diff.
+- over-correction: a local user/reviewer objection should normally produce a local correction; reverse the broader direction only when evidence invalidates the premise that direction depended on.
 
-## 7. Validate at trust boundaries
+A refactor succeeds when concepts, rule implementations, branch burden, or state ambiguity decrease—not merely when a function becomes shorter.
 
-Validate data where it first crosses a meaningful trust boundary. After a boundary creates a validated internal representation, trust that contract until another independent boundary appears.
+Before completion, perform one semantic diff review across **behavior, ownership, human reviewability, and diff scope**. A green test cannot excuse a failed lens. Load `references/implementation-and-review.md` when comments, dependency choice, workaround lifecycle, environment-dependent values, or the detailed diff review is material.
 
-Repeatedly checking the same invariant in every helper usually adds noise without improving safety.
+## 4. REDUCE — spend complexity only where it buys an independent guarantee
 
-Compatibility should live at the boundary that actually needs it. Do not spread obsolete internal behavior through the core design solely to satisfy tests or historical call shapes.
+After the changed responsibility works, reduce the candidate before closure. The default engineering cycle is:
 
-## 8. Comment for understanding
+`understand owner -> smallest sufficient change -> implement -> falsify -> reduce -> reverify invalidated evidence -> close`
 
-Structure and naming come before comments.
+Do not let a normal repair silently grow into `helper -> validator -> manifest -> recorder -> validator-of-validator`. Every retained layer must own a current responsibility or an independent guarantee that would actually disappear if that layer were deleted.
 
-Use comments and docstrings for information that is difficult to infer from the code itself:
+- Verification code may drive and observe product contracts; it must not become a second implementation of the product state machine, parser, policy engine, ownership model, or semantic rules merely to prove them.
+- Reduction is not LOC golf. Preserve every demonstrated correctness, safety, compatibility, provenance, or recovery property that still has a real owner.
 
-- why a non-obvious decision exists;
-- an invariant that must be preserved;
-- ordering or failure semantics;
-- an external constraint;
-- the meaning of a complex calculation or transformation.
+For non-trivial test/evidence or workaround-heavy changes, load `references/implementation-and-review.md` for the evidence budget, construction-residue lifecycle, and reduction checklist.
 
-Do not translate obvious syntax into prose. Do not use comment-count targets or generated commentary as a substitute for understandable structure.
+## 5. CLOSE — observe, verify, clean, and stop at the right boundary
 
-## 9. Observe the real result
+“Code executed” is not the same as “the requested result works.” Observe the surface the caller actually consumes when feasible, then hand the evidence claim to `verification-loop`, which owns boundary selection, depth, freshness, and the completion verdict. Do not activate `tdd-workflow` automatically; route regression design to `ai-regression-testing` only when a real repeated/shared contract justifies it. Never claim an unrun test/audit/build/deployment passed.
 
-A successful edit or build does not automatically prove that the requested behavior works.
+Clean task-owned construction residue while preserving unrelated and unknown assets. Remove temporary debug/generated/workaround material when ownership is proven and stop task-owned processes only through verified identity and their graceful lifecycle.
 
-When practical, observe the boundary that the caller or user actually consumes:
+If a long or multi-session responsibility needs a recovery boundary, or the remaining gate belongs to wall-clock time, an external service/provider, authentication/permission, data arrival, or a human, load `references/long-work-and-boundaries.md`. Record the concrete blocker/re-entry fact and stop instead of polling or inventing adjacent work.
 
-- invoke a library through its public contract;
-- run a command through its real entrypoint;
-- exercise a service through the interface its clients use;
-- reload changed persisted data through the real reader;
-- inspect an interface in the rendered state that matters.
+Persisted-data, destructive-action, security, financial, publication, research/PIT, and protected-asset hard rules remain owned by global/project policy and their specialist Skills. Do not duplicate or weaken them here.
 
-Choose observation depth according to the claim being made.
+Scale naturally. A small fix may be only:
 
-## 10. Refine once
+`understand caller -> fix -> inspect -> verify -> clean -> stop`
 
-After the implementation works, reread the changed responsibility as a maintainer.
+Expand the cycle only with demonstrated risk or scope; process volume is not rigor.
 
-Look for:
+A supported no-change conclusion is a valid engineering result when current evidence shows the suspected cost, defect, or abstraction need is immaterial or absent. Do not manufacture work to make the review look productive.
 
-- duplicated rules;
-- unnecessary forwarding layers;
-- broad context objects;
-- hidden mutable state;
-- repeated validation after a trusted boundary;
-- speculative fallback paths;
-- temporary debugging code;
-- stale compatibility branches;
-- confusing names or surprising side effects;
-- unrelated formatting or generated-file churn.
+## Specialist routing
 
-A refactor succeeds when concepts, ambiguity, or duplicated ownership decrease—not merely when a function becomes shorter.
+Use the smallest compatible set of specialist skills:
 
-## 11. Verify the changed claim
+- unknown/cross-component root cause -> `systematic-debugging`;
+- real retry/timeout/partial-data/error-contract design -> `error-handling`;
+- repeated regression category or shared-contract regression protection -> `ai-regression-testing`;
+- database/schema/data migration -> `database-migrations` plus the relevant DB/ORM skill;
+- browser or Windows GUI flow -> the appropriate E2E skill.
 
-Verification should be proportionate to the change.
-
-- Run focused checks that can falsify the intended behavior.
-- Add regression coverage when the behavior is important, repeatable, and not already protected.
-- Reuse unchanged evidence only when the relevant code and environment truly did not change.
-- Never describe an unrun test, build, audit, or manual check as passed.
-
-Prefer a small number of meaningful checks over broad ritual testing unrelated to the change.
-
-## 12. Leave the workspace deliberate
-
-Before finishing:
-
-- review the final diff;
-- preserve unrelated changes;
-- remove task-owned temporary files and debugging residue;
-- remove workarounds that are no longer needed;
-- keep generated output and runtime artifacts out of source locations unless the project deliberately owns them there;
-- stop task-owned auxiliary processes through their normal lifecycle when appropriate.
-
-Do not delete unknown assets merely to make the tree look cleaner.
-
-## 13. Stop at the correct boundary
-
-A task may end because the change is complete, because a local failure is understood, or because the remaining step is owned by an external dependency or human decision.
-
-When further progress depends on something outside the current execution context, record the current state, the blocker, and the condition that would make re-entry useful. Do not invent unrelated work merely to stay busy.
-
-## Data and safety baseline
-
-- Treat persisted schemas, identifiers, units, timestamps, and field meaning as contracts.
-- Define stable keys before joins, aggregation, deduplication, or updates.
-- Keep historical observations distinct from current projections when their identities differ.
-- Do not present stale, partial, synthetic, or unavailable data as complete real-world evidence.
-- Keep secrets, credentials, private records, and environment-specific values out of source and logs.
-- Guard destructive or irreversible actions at the actual mutation boundary required by the project.
-- Keep project-specific safety, release, data, and domain rules in project-local instructions rather than generalizing them into this skill.
-
-## Scale the workflow
-
-For a small obvious fix, the full cycle may be only:
-
-`understand -> change -> inspect -> verify -> clean`
-
-For a larger refactor or migration, spend more effort on ownership, compatibility, observation, and recovery. Increase process only when risk and scope justify it.
+Do not stack workflow skills merely because several descriptions sound relevant. The quality of engineering judgment comes from choosing the right boundary, not loading the largest checklist.
 
 ## Completion standard
 
-Before claiming completion, confirm that:
+Before claiming the task complete, confirm that:
 
-- the requested outcome is actually addressed;
-- the real caller reaches one clear implementation;
-- new complexity has a present justification;
-- important behavior was observed when practical;
-- applicable verification actually ran;
-- temporary task residue is resolved;
-- unrelated work was preserved;
-- remaining blockers are stated accurately.
+- the requested outcome is actually closed, not merely the user's enumerated steps; no known in-scope caller defect, half-wired path, duplicate owner, or obvious temporary workaround is left solely because the user did not explicitly name that substep;
+- the real caller reaches one authoritative implementation, and every layer the change added survived the reduction pass;
+- task-owned residue is gone while unrelated assets and working lifelines were preserved;
+- verification was actually run or explicitly left unrun with a reason;
+- any remaining external/time/Human gate has a clear re-entry condition instead of an active polling loop.
