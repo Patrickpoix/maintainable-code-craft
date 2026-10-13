@@ -1,6 +1,6 @@
 interface:
   display_name: "Maintainable Code Craft"
-  short_description: "Default human-grade engineering workflow"
-  default_prompt: "Use $maintainable-code-craft for this implementation, refactor, or code-level review."
+  short_description: "Whole-system engineering judgment and natural code"
+  default_prompt: "Use $maintainable-code-craft as a lightweight guide to coherent architecture, natural implementation, and whole-system quality."
 policy:
   allow_implicit_invocation: true

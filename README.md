@@ -1,77 +1,32 @@
 # Maintainable Code Craft
 
-A domain-neutral engineering skill for making software changes that remain understandable, testable, and easy to maintain.
+A lightweight engineering skill for better software design and implementation. It encourages whole-system understanding, clear ownership, natural code, and thoughtful verification **without prescribing a coding workflow**.
 
-It favors clear ownership, direct designs, explicit contracts, proportionate verification, and the smallest implementation that fully solves the current problem.
+## Philosophy
 
-## What it is for
+Good engineering is not the smallest diff, the fewest lines, or the longest checklist. It is a solution whose scope and structure match the real problem.
 
-Use this skill when writing, editing, refactoring, reviewing, or generating code. It provides a general maintainability baseline while leaving architecture, business rules, safety policy, and operational procedures to the project that owns them.
+- **Understand the system.** Trace relevant callers, data, state, dependencies, and user-visible behavior. For broad goals, consider the desired end state before accumulating local fixes.
+- **Choose the right responsibility.** Keep facts and rules with their natural owner, remove dead mechanisms, and simplify unnecessary abstractions. Refactor across modules when that is the coherent solution.
+- **Write naturally.** Prefer idiomatic, direct code, meaningful interfaces, and comments that explain non-obvious decisions.
+- **Preserve what matters.** Be deliberate about behavior, errors, units, persistence, and authorization. Verify consequential changes using meaningful evidence; avoid ceremonial checks.
+- **Judge the outcome.** Optimize for correctness, maintainability, performance, and a consistent whole—not metrics such as LOC or test counts.
 
-The core workflow is deliberately simple:
+This is a **judgment aid**, not a rigid method. Small tasks may need only a simple fix; large architectural problems can warrant broad changes. Project-specific contracts, safety rules, and user authorization always take precedence.
 
-`understand -> decide -> design -> implement -> observe -> refine -> verify -> clean`
+## Installation and use
 
-For tiny changes, most of those steps collapse naturally. For larger changes, the same sequence expands only where risk or scope requires it.
-
-## Principles
-
-- Follow the real caller and current executable behavior.
-- Keep one clear owner for each rule or transformation.
-- Add abstractions only when they remove a real maintenance burden.
-- Prefer direct code over speculative layers and generic wrappers.
-- Separate responsibilities when they genuinely change independently.
-- Validate at meaningful trust boundaries instead of everywhere.
-- Make side effects and failure states explicit.
-- Comment non-obvious reasoning, not obvious syntax.
-- Observe the result at the boundary the caller actually consumes.
-- Verify the changed claim with focused evidence.
-- Preserve unrelated changes and remove task-owned residue.
-- Keep project-specific rules in the project rather than embedding them in a global skill.
-
-## Repository layout
+Install the repository in your coding assistant's Skill directory with `SKILL.md` at its root. The Skill may be used implicitly or invoked explicitly:
 
 ```text
-maintainable-code-craft/
-├── SKILL.md
-├── agents/
-│   └── openai.yaml
-├── README.md
-├── README.zh-CN.md
-├── LICENSE
-└── assets/
-    └── banner.svg
-```
-
-## Installation
-
-Copy or clone this repository into the skill directory used by your coding assistant, keeping `SKILL.md` at the root of the skill folder. The exact skill location depends on the host application.
-
-After installation, confirm that the host can discover a skill named `maintainable-code-craft`.
-
-## Usage
-
-The skill is designed to be usable as an implicit baseline or an explicit instruction. Typical requests include:
-
-```text
-Refactor this module using maintainable-code-craft.
+Use maintainable-code-craft to review the system and propose the clearest complete solution.
 ```
 
 ```text
-Review this implementation for unnecessary complexity and unclear ownership.
+Refactor this subsystem for simpler ownership and maintainability without losing its behavior.
 ```
 
-```text
-Implement this change with the smallest complete design and focused verification.
-```
-
-Project-local instructions remain authoritative when they are more specific.
-
-## Scope
-
-This public skill intentionally stays general. It does not prescribe a particular framework, operating system, deployment method, business domain, data source, or release process.
-
-That separation is deliberate: reusable engineering principles belong here; project-specific knowledge belongs with the project that owns it.
+The Skill is framework-agnostic and contains no mandatory process artifacts, metrics, or specialist-Skill dependencies.
 
 ## License
 
